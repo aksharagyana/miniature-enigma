@@ -1,33 +1,38 @@
-{
-  "Name": "AKS-Postgres-ACR-Storage-LogAnalytics-Operator",
-  "IsCustom": true,
-  "Description": "Can provision AKS, Azure PostgreSQL Flexible Server, ACR, Storage (Blob+Queue), and Log Analytics Workspace only.",
-  "Actions": [
-    // AKS
-    "Microsoft.ContainerService/managedClusters/*",
+resource "azurerm_role_definition" "custom_aks_pgsql_acr_storage_log" {
+  name        = "AKS-Postgres-ACR-Storage-LogAnalytics-Operator"
+  scope       = data.azurerm_resource_group.target.id
+  description = "Can provision AKS, PostgreSQL Flexible Server, ACR, Storage (Blob+Queue), and Log Analytics Workspace only."
 
-    // PostgreSQL Flexible Server
-    "Microsoft.DBforPostgreSQL/flexibleServers/*",
-    "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules/*",
-    "Microsoft.DBforPostgreSQL/flexibleServers/configurations/*",
+  permissions {
+    actions = [
+      # AKS
+      "Microsoft.ContainerService/managedClusters/*",
 
-    // ACR
-    "Microsoft.ContainerRegistry/registries/*",
+      # PostgreSQL Flexible Server
+      "Microsoft.DBforPostgreSQL/flexibleServers/*",
+      "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules/*",
+      "Microsoft.DBforPostgreSQL/flexibleServers/configurations/*",
 
-    // Storage
-    "Microsoft.Storage/storageAccounts/*",
+      # ACR
+      "Microsoft.ContainerRegistry/registries/*",
 
-    // Log Analytics
-    "Microsoft.OperationalInsights/workspaces/*",
+      # Storage
+      "Microsoft.Storage/storageAccounts/*",
 
-    // Supporting operations (network, monitoring, private endpoints)
-    "Microsoft.Network/virtualNetworks/subnets/join/action",
-    "Microsoft.Network/privateEndpoints/*",
-    "Microsoft.Network/privateDnsZones/*",
-    "Microsoft.Insights/diagnosticSettings/*"
-  ],
-  "NotActions": [],
-  "AssignableScopes": [
-    "/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP_NAME>"
+      # Log Analytics
+      "Microsoft.OperationalInsights/workspaces/*",
+
+      # Supporting
+      "Microsoft.Network/virtualNetworks/subnets/join/action",
+      "Microsoft.Network/privateEndpoints/*",
+      "Microsoft.Network/privateDnsZones/*",
+      "Microsoft.Insights/diagnosticSettings/*",
+      "Microsoft.ManagedIdentity/userAssignedIdentities/*"
+    ]
+    not_actions = []
+  }
+
+  assignable_scopes = [
+    data.azurerm_resource_group.target.id
   ]
 }
