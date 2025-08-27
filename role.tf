@@ -36,3 +36,26 @@ resource "azurerm_role_definition" "custom_aks_pgsql_acr_storage_log" {
     data.azurerm_resource_group.target.id
   ]
 }
+
+
+resource "azurerm_role_assignment" "spn_assignment" {
+  scope              = data.azurerm_resource_group.target.id
+  role_definition_id = azurerm_role_definition.custom_aks_pgsql_acr_storage_log.role_definition_resource_id
+  principal_id       = azuread_service_principal.spn.object_id
+}
+
+
+
+resource "azurerm_policy_assignment" "allowed_locations" {
+  name                 = "allowed-locations-uksouth"
+  scope                = azurerm_resource_group.main.id
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/6e18b1f5-2b76-4f8d-9e07-1b4c3e88c707"
+  display_name         = "Allow only UK South"
+  description          = "This policy ensures that resources can only be deployed in UK South."
+
+  parameters = jsonencode({
+    listOfAllowedLocations = {
+      value = ["uksouth"]
+    }
+  })
+}
