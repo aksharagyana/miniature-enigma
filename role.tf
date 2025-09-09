@@ -1,7 +1,7 @@
 resource "azurerm_role_definition" "custom_aks_pgsql_acr_storage_log" {
   name        = "AKS-Postgres-ACR-Storage-LogAnalytics-KeyVault-Operator"
   scope       = data.azurerm_resource_group.target.id
-  description = "Can provision AKS, PostgreSQL Flexible Server (including Entra Administrator), ACR, Storage (Blob+Queue), Log Analytics Workspace, and Key Vault with private endpoints."
+  description = "Can provision AKS, PostgreSQL Flexible Server (including Entra Administrator), ACR, Storage (Blob+Queue), Log Analytics Workspace, and Key Vault (including Certificates Officer permissions) with private endpoints."
 
   permissions {
     actions = [
@@ -27,7 +27,25 @@ resource "azurerm_role_definition" "custom_aks_pgsql_acr_storage_log" {
       "Microsoft.KeyVault/vaults/*",
       "Microsoft.KeyVault/vaults/secrets/*",
       "Microsoft.KeyVault/vaults/keys/*",
-      "Microsoft.KeyVault/vaults/certificates/*",
+      # Key Vault Certificates Officer equivalent permissions
+      "Microsoft.KeyVault/vaults/certificates/read",
+      "Microsoft.KeyVault/vaults/certificates/write",
+      "Microsoft.KeyVault/vaults/certificates/delete",
+      "Microsoft.KeyVault/vaults/certificates/get",
+      "Microsoft.KeyVault/vaults/certificates/list",
+      "Microsoft.KeyVault/vaults/certificates/update",
+      "Microsoft.KeyVault/vaults/certificates/create",
+      "Microsoft.KeyVault/vaults/certificates/import",
+      "Microsoft.KeyVault/vaults/certificates/backup",
+      "Microsoft.KeyVault/vaults/certificates/restore",
+      "Microsoft.KeyVault/vaults/certificates/recover",
+      "Microsoft.KeyVault/vaults/certificates/purge",
+      "Microsoft.KeyVault/vaults/certificates/managecontacts",
+      "Microsoft.KeyVault/vaults/certificates/manageissuers",
+      "Microsoft.KeyVault/vaults/certificates/getissuers",
+      "Microsoft.KeyVault/vaults/certificates/listissuers",
+      "Microsoft.KeyVault/vaults/certificates/setissuers",
+      "Microsoft.KeyVault/vaults/certificates/deleteissuers",
 
       # Supporting
       "Microsoft.Network/virtualNetworks/subnets/join/action",
