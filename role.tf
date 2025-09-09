@@ -1,7 +1,7 @@
 resource "azurerm_role_definition" "custom_aks_pgsql_acr_storage_log" {
-  name        = "AKS-Postgres-ACR-Storage-LogAnalytics-Operator"
+  name        = "AKS-Postgres-ACR-Storage-LogAnalytics-KeyVault-Operator"
   scope       = data.azurerm_resource_group.target.id
-  description = "Can provision AKS, PostgreSQL Flexible Server, ACR, Storage (Blob+Queue), and Log Analytics Workspace only."
+  description = "Can provision AKS, PostgreSQL Flexible Server (including Entra Administrator), ACR, Storage (Blob+Queue), Log Analytics Workspace, and Key Vault with private endpoints."
 
   permissions {
     actions = [
@@ -12,6 +12,7 @@ resource "azurerm_role_definition" "custom_aks_pgsql_acr_storage_log" {
       "Microsoft.DBforPostgreSQL/flexibleServers/*",
       "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules/*",
       "Microsoft.DBforPostgreSQL/flexibleServers/configurations/*",
+      "Microsoft.DBforPostgreSQL/flexibleServers/administrators/*",
 
       # ACR
       "Microsoft.ContainerRegistry/registries/*",
@@ -21,6 +22,12 @@ resource "azurerm_role_definition" "custom_aks_pgsql_acr_storage_log" {
 
       # Log Analytics
       "Microsoft.OperationalInsights/workspaces/*",
+
+      # Key Vault
+      "Microsoft.KeyVault/vaults/*",
+      "Microsoft.KeyVault/vaults/secrets/*",
+      "Microsoft.KeyVault/vaults/keys/*",
+      "Microsoft.KeyVault/vaults/certificates/*",
 
       # Supporting
       "Microsoft.Network/virtualNetworks/subnets/join/action",
