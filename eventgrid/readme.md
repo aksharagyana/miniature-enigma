@@ -1,5 +1,20 @@
 # Provisioning Secure Azure Event Grid
 
+## Synopsis
+
+Azure **Event Grid** is a fully managed event routing service that enables reliable, scalable, and near real-time delivery of event notifications. It allows applications and services to react to events from Azure resources or custom sources without complex polling or manual integration.
+
+This document outlines how Event Grid will be **securely provisioned** in an enterprise environment:
+
+* Provisioned with **Private Endpoints** to ensure all traffic flows through the corporate VNet and not the public internet.
+* Access controlled using a custom RBAC role **`werf-operator`** with least-privilege permissions to provision and manage Event Grid resources.
+* Data is protected **in transit** via TLS 1.2+ and **at rest** via Microsoft-managed keys.
+* **Ingress and egress traffic** are strictly controlled via NSGs, service tags, and firewall/proxy rules limited to port 443/TCP.
+* **DNS resolution** is handled via Azure Private DNS Zones to ensure private name resolution.
+* **Monitoring and diagnostics** are enabled for auditing, troubleshooting, and compliance.
+
+---
+
 ## Overview
 
 This document describes a secure, enterprise-ready process to provision Azure Event Grid with **Private Endpoints**, and the minimum permissions required via a custom role **`werf-operator`**. It also recommends encryption, TLS usage, NSG rules, ingress/egress port requirements, and corporate network changes required to support private connectivity to Event Grid while preserving least-privilege access.
@@ -150,5 +165,6 @@ Recommended NSG rules (example):
 * **v1.0** — Initial draft covering role definition, PE, DNS, NSG guidance and CLI/Terraform examples.
 * **v1.1** — Added encryption (TLS/at rest), ingress/egress ports, and extended NSG/firewall recommendations.
 * **v1.2** — Clarified that Event Grid at rest encryption uses Microsoft-managed keys only; CMK not supported.
+* **v1.3** — Added synopsis to explain what Event Grid is and how it will be securely provisioned.
 
 ---
