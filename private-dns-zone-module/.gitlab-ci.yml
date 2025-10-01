@@ -1,70 +1,19 @@
-# GitLab CI/CD Pipeline for Azure Private DNS Zone Terraform Module
-# This pipeline validates, tests, and publishes the Terraform module using remote templates
-
 include:
-  - remote: 'https://gitlab.com/shivanaranaya111-group/terraform-ci-templates/-/raw/main/templates/terraform-validation.yml'
-  - remote: 'https://gitlab.com/shivanaranaya111-group/terraform-ci-templates/-/raw/main/templates/terraform-registry-publish.yml'
+  - project: 'shivanaranaya111-group/terraform-ci-templates'
+    ref: 'main'
+    file: 'import.yml'
 
 # Pipeline variables
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}
-  TF_VERSION: "1.5.0"
+  TF_VERSION: "1.13.3"
 
 # Pipeline stages
 stages:
-  - validation
+  - validate
+  - security
   - documentation
-  - build
+  - version
+  - tag
+  #  - build
   - publish
-
-# Validation stage - runs on all branches and MRs except tags
-terraform_validation:
-  stage: validation
-  extends: .terraform_validation
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "main"
-    - if: $CI_COMMIT_TAG
-      when: never
-
-# Documentation stage - runs on all branches and MRs except tags
-terraform_docs:
-  stage: documentation
-  extends: .terraform_docs
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "main"
-    - if: $CI_COMMIT_TAG
-      when: never
-
-# Build stage - runs on all branches and MRs except tags
-build_module:
-  stage: build
-  extends: .build_module
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_BRANCH != "main"
-    - if: $CI_COMMIT_TAG
-      when: never
-
-# Publish stage - manual trigger only on main branch
-determine_version:
-  stage: publish
-  extends: .determine_version
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: manual
-
-create_tag:
-  stage: publish
-  extends: .create_tag
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: manual
-
-publish_to_registry:
-  stage: publish
-  extends: .publish_to_registry
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: manual
