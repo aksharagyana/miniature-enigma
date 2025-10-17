@@ -10,7 +10,9 @@ cp /var/cache/apt/archives/*.deb ~/output/
 print_status "Fix 4: Configuring Podman for rootless mode..."
 
 # Create Podman configuration directory
+mkdir -p ~/.local/share/containers/storage
 mkdir -p ~/.config/containers
+mkdir -p /run/user/$(id -u)/containers
 
 # Create containers.conf for rootless
 cat > ~/.config/containers/containers.conf << 'EOF'
