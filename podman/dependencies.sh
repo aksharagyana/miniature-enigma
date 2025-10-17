@@ -51,3 +51,9 @@ override_kernel_check = "true"
 mount_program = "/usr/bin/fuse-overlayfs"
 mountopt = "nodev,fsync=0"
 EOF
+
+export CONTAINERS_CONF="$HOME/.config/containers/containers.conf"
+export CONTAINERS_STORAGE_CONF="$HOME/.config/containers/storage.conf"
+export PODMAN_SYSTEMD_UNIT=""
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export TMPDIR="/tmp"
