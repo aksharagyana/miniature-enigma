@@ -58,6 +58,7 @@ export PODMAN_SYSTEMD_UNIT=""
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 export TMPDIR="/tmp"
 
+sudo tee /etc/apparmor.d/usr.bin.podman > /dev/null <<'EOF'
 # Minimal working AppArmor profile for Podman rootless mode
 #include <tunables/global>
 
@@ -83,4 +84,4 @@ profile usr.bin.podman flags=(attach_disconnected,mediate_deleted) {
   # (your local file above will be read here)
   #include if exists <local/usr.bin.podman>
 }
-
+EOF
