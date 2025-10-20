@@ -57,3 +57,30 @@ export CONTAINERS_STORAGE_CONF="$HOME/.config/containers/storage.conf"
 export PODMAN_SYSTEMD_UNIT=""
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 export TMPDIR="/tmp"
+
+# Minimal working AppArmor profile for Podman rootless mode
+#include <tunables/global>
+
+profile usr.bin.podman flags=(attach_disconnected,mediate_deleted) {
+  # Allow everything for now except unsafe mounts
+  capability,
+  network,
+  file,
+  umount,
+  ptrace,
+  signal,
+  dbus,
+  mount,
+  rlimit,
+
+  # Allow library access
+  /usr/lib/x86_64-linux-gnu/** rix,
+
+  # Allow user-space libraries and configs
+  @{HOME}/** rix,
+
+  # Include local overrides
+  # (your local file above will be read here)
+  #include if exists <local/usr.bin.podman>
+}
+
