@@ -85,3 +85,72 @@ profile usr.bin.podman flags=(attach_disconnected,mediate_deleted) {
   #include if exists <local/usr.bin.podman>
 }
 EOF
+
+cat > /etc/apparmor.d/usr.bin.crun <<'EOF'
+# AppArmor profile for crun (Podman OCI runtime)
+# Compatible with Ubuntu 24.x hardened systems
+# Maintainer-safe structure: includes <local/usr.bin.crun> for overrides
+
+#include <tunables/global>
+
+profile crun /usr/bin/crun {
+  # Include standard abstractions
+  # These bring in common safe rules for libraries, DNS, users, etc.
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/user-tmp>
+
+  # Allow standard system binaries/libraries
+  /usr/bin/**        rix,
+  /usr/lib/**        rmix,
+  /lib/**            rmix,
+  /usr/libexec/**    rmix,
+
+  # Config and runtime directories
+  /etc/**            r,
+  /run/**            rw,
+  @{PROC}/**         r,
+  @{sys}/**          r,
+
+  # Needed for container sockets and temp work
+  /var/run/**        rw,
+  @{TEMPORARYDIR}/** rw,
+
+  # Networking permissions
+  network inet stream,
+  network inet6 stream,
+  network unix stream,
+
+  # Capabilities typically required by container runtimes
+  capability sys_admin,
+  capability sys_ptrace,
+  capability sys_chroot,
+  capability setgid,
+  capability setuid,
+  capability dac_override,
+  capability audit_write,
+  capability mknod,
+  capability net_bind_service,
+
+  # Allow crun's libcrun to re-execute via memfd
+  /memfd: rw,
+
+  # Allow reading /dev/null and /dev/urandom
+  /dev/null rw,
+  /dev/urandom r,
+
+  # Logging access
+  /var/log/** rwk,
+
+  # Signals and process control
+  signal (send,receive) peer=unconfined,
+  ptrace (read,readby,trace,traceby),
+
+  # Default deny for unknown paths
+  deny /** w,
+
+  # Include site-specific overrides
+  # This file is not overwritten by system updates
+  #include <local/usr.bin.crun>
+}
+EOF
