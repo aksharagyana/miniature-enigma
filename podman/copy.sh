@@ -26,3 +26,12 @@ docker run --rm \
   -v /opt/images:/output \
   quay.io/skopeo/stable \
   copy --tls-verify=false docker://<your-registry>/nginx:latest docker-archive:/output/nginx.tar:nginx:latest
+
+sudo apt install umoci -y
+
+mkdir -p /tmp/oci-nginx
+skopeo copy docker://nginx:latest oci:/tmp/oci-nginx:latest
+mkdir -p /tmp/nginx-bundle
+umoci unpack --image /tmp/oci-nginx:latest /tmp/nginx-bundle
+
+tar -cvf nginx-bundle.tar -C /tmp/nginx-bundle .
